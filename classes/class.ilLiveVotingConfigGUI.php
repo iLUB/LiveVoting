@@ -7,7 +7,7 @@ require_once('class.ilObjLiveVoting.php');
 
 /**
  * Class ilLiveVotingConfigGUI
- * 
+ *
  * @author Fabian Schmid <fs@studer-raimann.ch>
  */
 class ilLiveVotingConfigGUI extends ilPluginConfigGUI {
@@ -65,11 +65,11 @@ class ilLiveVotingConfigGUI extends ilPluginConfigGUI {
 			),
 			'allow_fullscreen' => array(
 				'type' => 'ilCheckboxInputGUI',
-				'subelements' => array(
-					'jquery' => array(
-						'type' => 'ilCheckboxInputGUI',
-					),
-				)
+//				'subelements' => array(
+//					'jquery' => array(
+//						'type' => 'ilCheckboxInputGUI',
+//					),
+//				)
 			),
 			'allow_shortlink' => array(
 				'type' => 'ilCheckboxInputGUI',
@@ -100,9 +100,9 @@ class ilLiveVotingConfigGUI extends ilPluginConfigGUI {
 					),
 				)
 			),
-			/*'use_stresstest' => array(
+			'use_responsive' => array(
 				'type' => 'ilCheckboxInputGUI',
-			),*/
+			),
 		);
 
 		return $this->fields;
@@ -265,7 +265,7 @@ class ilLiveVotingConfigGUI extends ilPluginConfigGUI {
 					}
 				}
 			}
-			ilUtil::sendSuccess($this->pl->txt('conf_saved'));
+			ilUtil::sendSuccess($this->pl->txt('conf_saved'), true);
 			$ilCtrl->redirect($this, 'configure');
 		} else {
 			$this->form->setValuesByPost();
