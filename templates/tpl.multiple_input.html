@@ -11,7 +11,7 @@ $(document).ready(function() {
 
 
     $('.lvo_x').live("click", function(){
-       $(this).parent().remove();
+       $(this).parent().parent().remove();
     });
 
         //MAKE PLACEHOLDERS FOR ALL BROWSERS
@@ -60,7 +60,8 @@ adderFunc = function(event, dom){
 <!-- END lvo_options_start -->
 <!-- BEGIN lvo_option -->
 <div class="lvo_option">
-        <input size="75" id="{OPTION_ID}" name="{OPTION_ID}" type="text" class="{OPTION_CLASS} {PLACEHOLDER_CLASS}" value="{OPTION_VALUE}" {PLACEHOLDER}> <img src='{X_IMAGE_PATH}' id='{OPTION_ID}_x' class="lvo_x" style='display: {X_DISPLAY};'>
+        <input size="75" id="{OPTION_ID}" name="{OPTION_ID}" type="text" class="{OPTION_CLASS} {PLACEHOLDER_CLASS}" value="{OPTION_VALUE}" {PLACEHOLDER}>
+        <a><span class="glyphicon glyphicon-minus lvo_x" aria-hidden="true" style='display: {X_DISPLAY};'></span></a>
     </div>
 <!-- END lvo_option -->
 <!-- BEGIN lvo_options_end -->
