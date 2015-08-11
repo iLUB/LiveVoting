@@ -60,7 +60,6 @@ class ilMultipleTextInputGUI extends ilCustomInputGUI {
 			$tpl->setVariable("PLACEHOLDER", "");
 			$tpl->setVariable("X_DISPLAY", "float");
 			$tpl->setVariable("DISABLED", "disabled");
-			$tpl->setVariable("X_IMAGE_PATH", $pl->getImagePath("x_image.png"));
 			$tpl->parseCurrentBlock();
 		}
 
@@ -70,7 +69,6 @@ class ilMultipleTextInputGUI extends ilCustomInputGUI {
 		$tpl->setVariable("OPTION_CLASS", "lvo_new_option");
 		$tpl->setVariable("PLACEHOLDER", "placeholder = '" . $this->placeholder . "'");
 		$tpl->setVariable("PLACEHOLDER_CLASS", "placeholder");
-		$tpl->setVariable("X_IMAGE_PATH", $pl->getImagePath("x_image.png"));
 		$tpl->setVariable("X_DISPLAY", "none");
 		$tpl->parseCurrentBlock();
 
