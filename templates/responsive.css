@@ -6,6 +6,10 @@
  * Special Thanks to Jochen Erkens, FH Aachen
  */
 @media only screen and (max-width: 640px), only screen and (min-device-width: 640px) and (max-device-width: 1136px) and (-webkit-min-device-pixel-ratio: 2) {
+    #il_center_col{
+        margin-top: 15px;
+    }
+
 	.lvo_pin, div.ilToolbar, .lvo_choice, .lvo_total_votes, .lvo_choice_header, .lvo_choice_count, .il_Tab, .ilAccHidden, .lvo_choice_footer br {
 		display: none;
 	}
@@ -59,7 +63,6 @@
 
 	a.lvo_vote_link {
 		text-align:     center;
-		height:         30px;
 		line-height:    30px;
 		display:        block;
 	}
@@ -83,10 +86,6 @@
 
 
 	table.lvo_cipher_titles {
-		margin: 0;
-	}
-
-	#il_center_col {
 		margin: 0;
 	}
 
