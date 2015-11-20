@@ -242,8 +242,10 @@ class ilObjLiveVotingGUI extends ilObjectPluginGUI {
 		// question
 		$qu = new ilTextAreaInputGUI($pl->txt("question"), "question");
 		$qu->setUseRte(true);
-		$qu->usePurifier(true);
-		$qu->setRTESupport($this->object->getId(), "xlvo", "xlvo_question", NULL, false, "3.4.7");
+		require_once('Services/AdvancedEditing/classes/class.ilObjAdvancedEditing.php');
+		$editing = new ilObjAdvancedEditing();
+		$qu->setRteTags($editing->_getUsedHTMLTags(''));
+		$qu->setRTESupport($this->object->getId(), "xlvo", "xlvo_question");
 		$this->form->addItem($qu);
 		// online
 		$cb = new ilCheckboxInputGUI($this->lng->txt("online"), "online");
