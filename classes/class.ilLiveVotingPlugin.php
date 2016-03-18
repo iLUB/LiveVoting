@@ -62,6 +62,13 @@ class ilLiveVotingPlugin extends ilRepositoryObjectPlugin {
 	public function getConfigTableName() {
 		return 'rep_robj_xlvo_conf';
 	}
+
+    /**
+     * For Now: stub method that must be implemented
+     */
+    protected function uninstallCustom() {
+        return;
+    }
 }
 
 ?>
