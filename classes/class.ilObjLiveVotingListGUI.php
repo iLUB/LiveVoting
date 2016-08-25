@@ -21,7 +21,11 @@
 	+-----------------------------------------------------------------------------+
 */
 
-include_once "./Services/Repository/classes/class.ilObjectPluginListGUI.php";
+require_once('./Services/Repository/classes/class.ilObjectPluginListGUI.php');
+require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/QuestionTypes/class.xlvoQuestionTypes.php');
+require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/Pin/class.xlvoPin.php');
+require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/Voter/class.xlvoVoter.php');
+require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/Player/class.xlvoPlayer.php');
 
 /**
  * ListGUI implementation for LiveVoting object plugin. This one
@@ -35,9 +39,15 @@ include_once "./Services/Repository/classes/class.ilObjectPluginListGUI.php";
 class ilObjLiveVotingListGUI extends ilObjectPluginListGUI {
 
 	/**
+	 * @var array
+	 */
+	protected $commands = array();
+
+
+	/**
 	 * Init type
 	 */
-	function initType() {
+	public function initType() {
 		$this->setType("xlvo");
 	}
 
@@ -45,7 +55,7 @@ class ilObjLiveVotingListGUI extends ilObjectPluginListGUI {
 	/**
 	 * Get name of gui class handling the commands
 	 */
-	function getGuiClass() {
+	public function getGuiClass() {
 		return "ilObjLiveVotingGUI";
 	}
 
@@ -53,20 +63,48 @@ class ilObjLiveVotingListGUI extends ilObjectPluginListGUI {
 	/**
 	 * Get commands
 	 */
-	function initCommands() {
-		return array(
+	public function initCommands() {
+		$this->static_link_enabled = true;
+		$this->delete_enabled = true;
+		$this->cut_enabled = true;
+		$this->copy_enabled = true;
+		$this->subscribe_enabled = false;
+		$this->link_enabled = true;
+		$this->payment_enabled = false;
+		$this->info_screen_enabled = true;
+		$this->timings_enabled = false;
+
+		$this->gui_class_name = "ilobjlivevotinggui";
+
+		// general commands array
+		$this->commands = array(
 			array(
 				"permission" => "read",
-				"cmd" => "showContent",
-				"default" => true
+				"cmd"        => "showContent",
+				"default"    => true,
 			),
 			array(
 				"permission" => "write",
-				"cmd" => "editProperties",
-				"txt" => $this->txt("edit"),
-				"default" => false
+				"cmd"        => "editProperties",
+				"txt"        => $this->txt("xlvo_edit"),
+				"default"    => false,
 			),
 		);
+
+		return $this->commands;
+	}
+
+
+	/**
+	 * @param string $a_cmd
+	 * @return string
+	 */
+	public function getCommandFrame($a_cmd) {
+		if (!$this->checkCommandAccess("write", $a_cmd, $this->ref_id, $this->type)) {
+			return '_blank';
+		}
+
+		return parent::getCommandFrame($a_cmd);
 	}
 
 
@@ -78,22 +116,30 @@ class ilObjLiveVotingListGUI extends ilObjectPluginListGUI {
 	 *                        "property" (string) => property name
 	 *                        "value" (string) => property value
 	 */
-	function getProperties() {
-		global $lng, $ilUser;
-
+	public function getProperties() {
 		$props = array();
 
-		$this->plugin->includeClass("class.ilObjLiveVotingAccess.php");
+		//		$props[] = array(
+		//			"alert"    => false,
+		//			"property" => 'Online',
+		//			"value"    => xlvoVoter::count(xlvoPlayer::getInstanceForObjId($this->obj_id)),
+		//		);
+		//
+		//		$props[] = array(
+		//			"alert"    => false,
+		//			"property" => 'PIN',
+		//			"value"    => xlvoPin::lookupPin($this->obj_id),
+		//		);
+
+		require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/class.ilObjLiveVotingAccess.php');
 		if (!ilObjLiveVotingAccess::checkOnline($this->obj_id)) {
 			$props[] = array(
-				"alert" => true,
-				"property" => $this->txt("status"),
-				"value" => $this->txt("offline")
+				"alert"    => true,
+				"property" => $this->txt("obj_status"),
+				"value"    => $this->txt("obj_offline"),
 			);
 		}
 
 		return $props;
 	}
 }
-
-?>
