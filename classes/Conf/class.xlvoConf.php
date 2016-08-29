@@ -29,14 +29,6 @@ class xlvoConf extends ActiveRecord {
 		if (self::getConfig(self::F_ALLOW_SHORTLINK)) {
 			$url = self::getConfig(self::F_ALLOW_SHORTLINK_LINK);
 			$url = rtrim($url, "/") . "/";
-			$url = str_replace("http://", '', $url);
-			$url = str_replace("https://", '', $url);
-
-			if (ilHTTPS::getInstance()->isDetected()) {
-				$url = 'https://' . $url;
-			} else {
-				$url = 'http://' . $url;
-			}
 		} else {
 			$url = ILIAS_HTTP_PATH . '/Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/pin.php?pin=';
 		}
