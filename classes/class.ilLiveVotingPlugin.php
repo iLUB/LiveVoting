@@ -1,5 +1,7 @@
 <?php
 
+
+require_once __DIR__ . '/../vendor/autoload.php';
 include_once('./Services/Repository/classes/class.ilRepositoryObjectPlugin.php');
 
 /**
@@ -9,7 +11,7 @@ include_once('./Services/Repository/classes/class.ilRepositoryObjectPlugin.php')
  * @version $Id$
  *
  */
-class ilLiveVotingPlugin extends ilRepositoryObjectPlugin {
+class ilLiveVotingPlugin extends \ilRepositoryObjectPlugin {
 
 	const PLUGIN_NAME = 'LiveVoting';
 	/**
@@ -43,14 +45,14 @@ class ilLiveVotingPlugin extends ilRepositoryObjectPlugin {
 	}
 
 
-	//	/**
-	//	 * @param $key
-	//	 * @return mixed|string
-	//	 * @throws \ilException
-	//	 */
-	//	public function txt($key) {
-	//		require_once('./Customizing/global/plugins/Libraries/PluginTranslator/class.sragPluginTranslator.php');
-	//
-	//		return sragPluginTranslator::getInstance($this)->active()->write()->txt($key);
-	//	}
+//		/**
+//		 * @param $key
+//		 * @return mixed|string
+//		 * @throws \ilException
+//		 */
+//		public function txt($key) {
+//			require_once('./Customizing/global/plugins/Libraries/PluginTranslator/class.sragPluginTranslator.php');
+//
+//			return sragPluginTranslator::getInstance($this)->active()->write()->txt($key);
+//		}
 }

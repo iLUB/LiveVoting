@@ -1,5 +1,4 @@
 <?php
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/QuestionTypes/CorrectOrder/class.xlvoCorrectOrderResultsGUI.php');
 
 /**
  * Class xlvoFreeOrderResultsGUI
@@ -52,12 +51,10 @@ class xlvoFreeOrderResultsGUI extends xlvoCorrectOrderResultsGUI
 		foreach ($options as $xlvoOption)
 		{
 			$xlvoBarPercentageGUI = new xlvoBarPercentageGUI();
-			$xlvoBarPercentageGUI->setRound(true);
-			$xlvoBarPercentageGUI->setShowAbsolute(true);
-			$xlvoBarPercentageGUI->setTotal($possible_max);
-			$xlvoBarPercentageGUI->setMax($possible_max);
+			$xlvoBarPercentageGUI->setRound(2);
+			$xlvoBarPercentageGUI->setShowInPercent(false);
+			$xlvoBarPercentageGUI->setMaxVotes($possible_max);
 			$xlvoBarPercentageGUI->setTitle($xlvoOption->getTextForPresentation());
-			$xlvoBarPercentageGUI->setId($xlvoOption->getId());
 			$xlvoBarPercentageGUI->setVotes($option_weight[$xlvoOption->getId()] / $total_voters);
 			$xlvoBarPercentageGUI->setOptionLetter($xlvoOption->getCipher());
 

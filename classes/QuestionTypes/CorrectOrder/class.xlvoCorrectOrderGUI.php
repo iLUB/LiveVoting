@@ -1,6 +1,8 @@
 <?php
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/QuestionTypes/class.xlvoQuestionTypesGUI.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/Display/Bar/class.xlvoBarMovableGUI.php');
+
+use LiveVoting\Js\xlvoJs;
+use LiveVoting\Option\xlvoOption;
+use LiveVoting\Vote\xlvoVote;
 
 /**
  * Class xlvoCorrectOrderGUI
@@ -29,7 +31,10 @@ class xlvoCorrectOrderGUI extends xlvoQuestionTypesGUI {
 
 
 	protected function submit() {
-		$this->manager->input(json_encode($_POST['id']), $_POST['vote_id']);
+		$this->manager->inputOne(array(
+			"input" => json_encode($_POST['id']),
+			"vote_id" => $_POST['vote_id']
+		));
 	}
 
 
@@ -45,7 +50,7 @@ class xlvoCorrectOrderGUI extends xlvoQuestionTypesGUI {
 	protected function getFormContent() {
 		$pl = ilLiveVotingPlugin::getInstance();
 
-		$tpl = new ilTemplate('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/templates/default/QuestionTypes/FreeOrder/tpl.free_order.html', true, false);
+		$tpl = new \ilTemplate('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/templates/default/QuestionTypes/FreeOrder/tpl.free_order.html', true, false);
 		$tpl->setVariable('ACTION', $this->ctrl->getFormAction($this));
 		$tpl->setVariable('ID', 'xlvo_sortable');
 		$tpl->setVariable('BTN_RESET', $pl->txt('qtype_4_clear'));
@@ -67,15 +72,9 @@ class xlvoCorrectOrderGUI extends xlvoQuestionTypesGUI {
 		$tpl->setVariable('CONTENT', $bars->getHTML());
 
 		if ($this->isShowCorrectOrder()) {
-			$correct_order = array();
-			foreach ($this->manager->getVoting()->getVotingOptions() as $xlvoOption) {
-				$correct_order[(int)$xlvoOption->getCorrectPosition()] = $xlvoOption;
-			};
-			ksort($correct_order);
+			$correct_order = $this->getCorrectOrder();
 			$solution_html = $this->txt('correct_solution');
-			/**
-			 * @var $item xlvoOption
-			 */
+
 			foreach ($correct_order as $item) {
 				$solution_html .= ' <span class="label label-primary">' . $item->getCipher() . '</span>';
 			}
@@ -95,7 +94,7 @@ class xlvoCorrectOrderGUI extends xlvoQuestionTypesGUI {
 			return array();
 		}
 		$states = $this->getButtonsStates();
-		$b = ilLinkButton::getInstance();
+		$b = \ilLinkButton::getInstance();
 		$b->setId(self::BUTTON_TOTTLE_DISPLAY_CORRECT_ORDER);
 		if ($states[self::BUTTON_TOTTLE_DISPLAY_CORRECT_ORDER]) {
 			$b->setCaption(xlvoGlyphGUI::get('eye-close'), false);
@@ -103,7 +102,7 @@ class xlvoCorrectOrderGUI extends xlvoQuestionTypesGUI {
 			$b->setCaption(xlvoGlyphGUI::get('eye-open'), false);
 		}
 
-		$t = ilLinkButton::getInstance();
+		$t = \ilLinkButton::getInstance();
 		$t->setId(self::BUTTON_TOGGLE_PERCENTAGE);
 		if ($states[self::BUTTON_TOGGLE_PERCENTAGE]) {
 			$t->setCaption('%', false);
@@ -132,5 +131,17 @@ class xlvoCorrectOrderGUI extends xlvoQuestionTypesGUI {
 	public function handleButtonCall($button_id, $data) {
 		$states = $this->getButtonsStates();
 		$this->saveButtonState($button_id, !$states[$button_id]);
+	}
+
+	/**
+	 * @return xlvoOption[]
+	 */
+	protected function getCorrectOrder() {
+		$correct_order = array();
+		foreach ($this->manager->getVoting()->getVotingOptions() as $xlvoOption) {
+			$correct_order[(int)$xlvoOption->getCorrectPosition()] = $xlvoOption;
+		};
+		ksort($correct_order);
+		return $correct_order;
 	}
 }

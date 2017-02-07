@@ -1,6 +1,8 @@
 <?php
 
-require_once('./Services/ActiveRecord/class.ActiveRecord.php');
+namespace LiveVoting\Option;
+
+use LiveVoting\Cache\CachingActiveRecord;
 
 /**
  * Class xlvoOption
@@ -9,7 +11,7 @@ require_once('./Services/ActiveRecord/class.ActiveRecord.php');
  * @author  Fabian Schmid <fs@studer-raimann.ch>
  * @version 1.0.0
  */
-class xlvoOption extends ActiveRecord {
+class xlvoOption extends CachingActiveRecord  {
 
 	const STAT_INACTIVE = 0;
 	const STAT_ACTIVE = 1;
@@ -39,15 +41,21 @@ class xlvoOption extends ActiveRecord {
 	public function getText() {
 		return $this->text;
 	}
-	
-	
 
 
 	/**
 	 * @return string
 	 */
 	public function getTextForPresentation() {
-		return ilUtil::prepareTextareaOutput($this->text, true);
+		return \ilUtil::prepareTextareaOutput($this->getTextForEditor(), true);
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getTextForEditor() {
+		return \ilRTE::_replaceMediaObjectImageSrc($this->text, 1);
 	}
 
 
@@ -193,7 +201,7 @@ class xlvoOption extends ActiveRecord {
 
 
 	/**
-	 * @return string
+	 * @return int
 	 */
 	public function getPosition() {
 		return $this->position;
@@ -201,7 +209,7 @@ class xlvoOption extends ActiveRecord {
 
 
 	/**
-	 * @param string $position
+	 * @param int $position
 	 */
 	public function setPosition($position) {
 		$this->position = $position;

@@ -10,11 +10,17 @@ var xlvoPlayer = {
         this.config = config;
         this.ready = true;
         xlvoPlayer.log(this.config);
+
+        //set the height for safari
+        var node = $('#xlvo-display-player').children();
+        $('#xlvo-display-player').css('height', node.css('height'));
+
         if (xlvoPlayer.config.use_mathjax && !!MathJax) {
-            MathJax.Hub.Config({
-                "HTML-CSS": {scale: 80}
-            });
+            MathJax.Hub.Config(xlvoPlayer.mathjax_config);
         }
+    },
+    mathjax_config: {
+        "HTML-CSS": {scale: 80}
     },
     buttons_handled: false,
     toolbar_loaded: false,
@@ -55,6 +61,7 @@ var xlvoPlayer = {
         this.getPlayerData();
     },
     handleFullScreen: function () {
+
         this.btn_close_fullscreen.parent().hide();
         var jq_target = $('div.ilTabsContentOuter');
         var target = jq_target[0];
@@ -81,8 +88,14 @@ var xlvoPlayer = {
                     self.btn_start_fullscreen.parent().hide();
                     self.btn_close_fullscreen.parent().show();
                 }
+
+                //set the height for safari
+                var node = $('#xlvo-display-player').children();
+                $('#xlvo-display-player').css('height', node.css('height'));
+
             });
         }
+
     }, registerElements: function () {
         $(document).keydown(function (e) {
             switch (e.which) {
@@ -221,8 +234,12 @@ var xlvoPlayer = {
             this.btn_next.attr('disabled', 'disabled');
             this.btn_previous.attr('disabled', 'disabled');
         }
-        var attendees = document.getElementById('xlvo-attendees');
-        attendees.innerHTML = (this.player.attendees + ' Online');
+        if (this.player.attendees > 0) {
+            var attendees = document.getElementById('xlvo-attendees');
+            attendees.innerHTML = (this.player.attendees + ' Online');
+        }
+
+
     },
     startRequest: function () {
         xlvoPlayer.request_pending = true;
@@ -256,11 +273,28 @@ var xlvoPlayer = {
             {
 
                 var playerHtml = data.player_html;
-                $('#xlvo-display-player').replaceWith('<div id="xlvo-display-player">' + playerHtml + '</div>');
+
+                //create new jquery node
+                var node = $(playerHtml);
+
+                //get list of old childs
+                var oldNode = $('#xlvo-display-player').children();
+
+                //append new child
+                $('#xlvo-display-player').append(node);
+
+                //set height because some browser ignore the height of the absolute content of the player
+                $('#xlvo-display-player').css('height', node.css('height'));
+
+                //fade out old child and remove child afterwards
+                oldNode.fadeOut(200, function () {
+                    oldNode.remove();
+                }.bind(oldNode));
+
+
                 if (xlvoPlayer.config.use_mathjax && !!MathJax) {
-                    MathJax.Hub.Config({
-                        "HTML-CSS": {scale: 80}
-                    });
+                    xlvoPlayer.log('kick mathjax');
+                    MathJax.Hub.Config(xlvoPlayer.mathjax_config);
                     MathJax.Hub.Queue(
                         ["Typeset", MathJax.Hub, 'xlvo-display-player']
                     );
@@ -303,6 +337,7 @@ var xlvoPlayer = {
         var input_data = input_data ? input_data : {};
         var post_data = $.extend({call: cmd}, input_data);
         $.post(xlvoPlayer.config.base_url + '&cmd=apiCall', post_data).done(function (data) {
+
             // xlvoPlayer.endRequest();
             xlvoPlayer.handleSwitch();
             xlvoPlayer.getPlayerData();
@@ -320,7 +355,11 @@ var xlvoPlayer = {
         xlvoPlayer.startRequest();
         xlvoPlayer.toolbar_loader.show();
         this.log('call Button: ' + button_id);
-        $.post(xlvoPlayer.config.base_url + '&cmd=apiCall', {call: 'button', button_id: button_id, button_data: data}).done(function (data) {
+        $.post(xlvoPlayer.config.base_url + '&cmd=apiCall', {
+            call: 'button',
+            button_id: button_id,
+            button_data: data
+        }).done(function (data) {
 
         }).fail(function () {
 
