@@ -1,6 +1,6 @@
 <?php
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/QuestionTypes/SingleVote/class.xlvoSingleVoteResultsGUI.php');
-require_once('class.xlvoCorrectOrderGUI.php');
+
+use LiveVoting\Option\xlvoOption;
 
 /**
  * Class xlvoCorrectOrderResultsGUI
@@ -38,11 +38,10 @@ class xlvoCorrectOrderResultsGUI extends xlvoSingleVoteResultsGUI {
 		$correct_option = new xlvoOption();
 		$correct_option->setText($this->txt('correct'));
 		$bar = new xlvoBarPercentageGUI();
-		$bar->setTotal($this->manager->countVotes());
 		$bar->setTitle($correct_option->getTextForPresentation());
 		$bar->setVotes($correct_votes);
-		$bar->setMax($this->manager->countVoters());
-		$bar->setShowAbsolute($this->isShowAbsolute());
+		$bar->setMaxVotes($this->manager->countVoters());
+		$bar->setShowInPercent(!$this->isShowAbsolute());
 
 		$bars->addBar($bar);
 
@@ -50,11 +49,10 @@ class xlvoCorrectOrderResultsGUI extends xlvoSingleVoteResultsGUI {
 		$wrong_option->setText($this->txt('wrong'));
 
 		$bar = new xlvoBarPercentageGUI();
-		$bar->setTotal($this->manager->countVotes());
+		$bar->setMaxVotes($this->manager->countVotes());
 		$bar->setTitle($wrong_option->getTextForPresentation());
 		$bar->setVotes($wrong_votes);
-		$bar->setMax($this->manager->countVoters());
-		$bar->setShowAbsolute($this->isShowAbsolute());
+		$bar->setShowInPercent(!$this->isShowAbsolute());
 
 		$bars->addBar($bar);
 
@@ -67,13 +65,14 @@ class xlvoCorrectOrderResultsGUI extends xlvoSingleVoteResultsGUI {
 			 */
 			foreach ($correct_order as $item) {
 				$solution_html .= ' <p><h1 class="xlvo-option"><span class="label label-primary xlvo-option">' . $item->getCipher() . '</span> '
-				                  . $item->getText() . '</h1></p>';
+				                  . $item->getTextForPresentation() . '</h1></p>';
 			}
 			$bars->addSolution($solution_html);
 		}
 
 		return $bars->getHTML();
 	}
+
 
 
 	/**

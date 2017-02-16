@@ -1,9 +1,14 @@
 <?php
 
-require_once('./Services/ActiveRecord/class.ActiveRecord.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/Voter/class.xlvoVoter.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/Vote/class.xlvoVote.php');
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/Player/class.xlvoPlayerGUI.php');
+namespace LiveVoting\Player;
+
+use LiveVoting\Cache\CachingActiveRecord;
+use LiveVoting\Cache\xlvoCacheFactory;
+use LiveVoting\QuestionTypes\xlvoQuestionTypes;
+use LiveVoting\Round\xlvoRound;
+use LiveVoting\Vote\xlvoVote;
+use LiveVoting\Voter\xlvoVoter;
+use LiveVoting\Voting\xlvoVoting;
 
 /**
  * Class xlvoPlayer
@@ -12,7 +17,7 @@ require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/
  * @author  Fabian Schmid <fs@studer-raimann.ch>
  * @version 1.0.0
  */
-class xlvoPlayer extends ActiveRecord {
+class xlvoPlayer extends CachingActiveRecord  {
 
 	const STAT_STOPPED = 0;
 	const STAT_RUNNING = 1;
@@ -21,6 +26,7 @@ class xlvoPlayer extends ActiveRecord {
 	const STAT_FROZEN = 4;
 	const SECONDS_ACTIVE = 4;
 	const SECONDS_TO_SLEEP = 30;
+    const CACHE_TTL_SECONDS = 1800;
 	/**
 	 * @var array
 	 */
@@ -40,21 +46,67 @@ class xlvoPlayer extends ActiveRecord {
 	 * @return xlvoPlayer
 	 */
 	public static function getInstanceForObjId($obj_id) {
-		if (!empty(self::$instance_cache[$obj_id])) {
+
+	    //use in memory instance if possible
+	    if (!empty(self::$instance_cache[$obj_id])) {
 			return self::$instance_cache[$obj_id];
 		}
-		$obj = self::where(array( 'obj_id' => $obj_id ))->first();
-		if (!$obj instanceof self) {
-			$obj = new self();
-			$obj->setObjId($obj_id);
-		}
-		self::$instance_cache[$obj_id] = $obj;
 
-		return self::$instance_cache[$obj_id];
+
+		//if possible use cache
+		$cache = xlvoCacheFactory::getInstance();
+        if($cache->isActive())
+            return self::getInstanceForObjectIdWithCache($obj_id);
+        else
+            return self::getInstanceForObjectIdWithoutCache($obj_id);
+
 	}
 
+	private static function getInstanceForObjectIdWithCache($obj_id)
+    {
 
-	/**
+        $key = self::returnDbTableName() . '_obj_id_' . $obj_id;
+        $cache = xlvoCacheFactory::getInstance();
+        $instance = $cache->get($key);
+
+        if($instance instanceof \stdClass)
+        {
+            $player = self::find($instance->id); //relay on the ar connector cache
+
+            self::$instance_cache[$obj_id] = $player;
+            return self::$instance_cache[$obj_id];
+        }
+
+        $obj = self::where(array( 'obj_id' => $obj_id ))->first();
+        if (!$obj instanceof self) {
+            $obj = new self();
+            $obj->setObjId($obj_id);
+        }
+        else
+        {
+            $player = new \stdClass();
+            $player->id = $obj->getPrimaryFieldValue();
+            $cache->set($key, $player, self::CACHE_TTL_SECONDS);
+        }
+
+        self::$instance_cache[$obj_id] = $obj;
+
+        return self::$instance_cache[$obj_id];
+    }
+
+    private static function getInstanceForObjectIdWithoutCache($obj_id)
+    {
+        $obj = self::where(array( 'obj_id' => $obj_id ))->first();
+        if (!$obj instanceof self) {
+            $obj = new self();
+            $obj->setObjId($obj_id);
+        }
+        self::$instance_cache[$obj_id] = $obj;
+
+        return self::$instance_cache[$obj_id];
+    }
+
+    /**
 	 * @param bool $simulate_user
 	 * @return int
 	 */
@@ -153,10 +205,10 @@ class xlvoPlayer extends ActiveRecord {
 
 
 	/**
-	 * @return stdClass
+	 * @return \stdClass
 	 */
 	public function getStdClassForVoter() {
-		$obj = new stdClass();
+		$obj = new \stdClass();
 		$obj->status = (int)$this->getStatus(true);
 		$obj->force_reload = false;
 		$obj->active_voting_id = (int)$this->getActiveVotingId();
@@ -170,10 +222,10 @@ class xlvoPlayer extends ActiveRecord {
 
 
 	/**
-	 * @return stdClass
+	 * @return \stdClass
 	 */
 	public function getStdClassForPlayer() {
-		$obj = new stdClass();
+		$obj = new \stdClass();
 		$obj->is_first = (bool)$this->getCurrentVotingObject()->isFirst();
 		$obj->is_last = (bool)$this->getCurrentVotingObject()->isLast();
 		$obj->status = (int)$this->getStatus(true);
@@ -183,15 +235,17 @@ class xlvoPlayer extends ActiveRecord {
 		$obj->votes = (int)xlvoVote::where(array(
 			'voting_id' => $this->getCurrentVotingObject()->getId(),
 			'status'    => xlvoVote::STAT_ACTIVE,
+			'round_id'	=> $this->getRoundId()
 		))->count();
 
 		$last_update = xlvoVote::where(array(
 			'voting_id' => $this->getActiveVotingId(),
 			'status'    => xlvoVote::STAT_ACTIVE,
+			'round_id'	=> $this->getRoundId()
 		))->orderBy('last_update', 'DESC')->getArray('last_update', 'last_update');
 		$last_update = array_shift(array_values($last_update));
 		$obj->last_update = (int)$last_update;
-		$obj->attendees = (int)xlvoVoter::countVoters($this->getId());;
+		$obj->attendees = (int)xlvoVoter::countVoters($this->getId());
 		$obj->qtype = $this->getQuestionTypeClassName();
 		$obj->countdown = $this->remainingCountDown();
 		$obj->has_countdown = $this->isCountDownRunning();
@@ -212,7 +266,7 @@ class xlvoPlayer extends ActiveRecord {
 	 * @return bool
 	 */
 	public function isFrozenOrUnattended() {
-		if ($this->getStatus() == self::STAT_RUNNING) {
+		if ($this->getStatus(false) == self::STAT_RUNNING) {
 			return (bool)($this->isFrozen() || $this->isUnattended());
 		} else {
 			return false;
@@ -248,6 +302,7 @@ class xlvoPlayer extends ActiveRecord {
 		$this->setShowResults(false);
 		$this->setTimestampRefresh(time() + self::SECONDS_TO_SLEEP);
 		$this->setActiveVoting($voting_id);
+		$this->setRoundId(xlvoRound::getLatestRoundId($this->getObjId()));
 		$this->store();
 	}
 
@@ -259,7 +314,6 @@ class xlvoPlayer extends ActiveRecord {
 			$this->create();
 		}
 	}
-
 
 	/**
 	 * @return bool
@@ -390,6 +444,14 @@ class xlvoPlayer extends ActiveRecord {
 	 */
 	protected $force_reload = false;
 
+	/**
+	 * @var int
+	 *
+	 * @db_has_field        true
+	 * @db_fieldtype        integer
+	 * @db_length           8
+	 */
+	protected $round_id = 0;
 
 	/**
 	 * @return int
@@ -558,6 +620,19 @@ class xlvoPlayer extends ActiveRecord {
 		$this->countdown_start = $countdown_start;
 	}
 
+	/**
+	 * @return int
+	 */
+	public function getRoundId() {
+		return $this->round_id;
+	}
+
+	/**
+	 * @param int $round_id
+	 */
+	public function setRoundId($round_id) {
+		$this->round_id = $round_id;
+	}
 
 	/**
 	 * @param $field_name
@@ -586,10 +661,20 @@ class xlvoPlayer extends ActiveRecord {
 	public function wakeUp($field_name, $field_value) {
 		switch ($field_name) {
 			case 'button_states':
+				if(!is_string($field_value))
+					return null;
 				$var = json_decode($field_value, true);
+
+                //check if we got the database entry
 				if (!is_array($var)) {
 					$var = array();
 				}
+
+				//check if we got a cache entry
+				if(is_array($field_value))
+                {
+                    $var = $field_value;
+                }
 
 				return $var;
 		}

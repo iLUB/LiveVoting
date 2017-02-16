@@ -18,7 +18,9 @@ Start at your ILIAS root directory
 ```bash
 mkdir -p Customizing/global/plugins/Services/Repository/RepositoryObject  
 cd Customizing/global/plugins/Services/Repository/RepositoryObject
-git clone https://github.com/studer-raimann/LiveVoting.git  
+git clone https://github.com/studer-raimann/LiveVoting.git
+cd ./LiveVoting
+php composer.phar install
 ```  
 As ILIAS administrator go to "Administration->Plugins" and install/activate the plugin.  
 
@@ -39,8 +41,8 @@ Sind Sie interessiert an einer Plugin-Patenschaft (https://studer-raimann.ch/pro
 
 ###Contact
 studer + raimann ag  
-Waldeggstrasse 72  
-3097 Liebefeld  
+Farbweg 9  
+3400 Burgdorf  
 Switzerland  
 
 info@studer-raimann.ch  
