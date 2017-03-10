@@ -55,7 +55,11 @@ class xlvoFreeOrderResultsGUI extends xlvoCorrectOrderResultsGUI
 			$xlvoBarPercentageGUI->setShowInPercent(false);
 			$xlvoBarPercentageGUI->setMaxVotes($possible_max);
 			$xlvoBarPercentageGUI->setTitle($xlvoOption->getTextForPresentation());
-			$xlvoBarPercentageGUI->setVotes($option_weight[$xlvoOption->getId()] / $total_voters);
+            if($total_voters == 0) {
+                $xlvoBarPercentageGUI->setVotes($total_voters);
+            } else {
+                $xlvoBarPercentageGUI->setVotes($option_weight[$xlvoOption->getId()] / $total_voters);
+            }
 			$xlvoBarPercentageGUI->setOptionLetter($xlvoOption->getCipher());
 
 			$bars->addBar($xlvoBarPercentageGUI);
