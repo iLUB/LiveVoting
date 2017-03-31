@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="32px" height="32px" viewBox="0 0 595.3 841.9" enable-background="new 0 0 595.3 841.9" xml:space="preserve">
-<g id="Ebene_2_1_">
-	<circle fill="#52658A" cx="283.3" cy="434.4" r="348.9"/>
-</g>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="32px" height="32px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve">
+<rect fill="none" width="32" height="32"/>
 <g>
-	<path fill="#F98128" stroke="#FFFFFF" stroke-width="40" stroke-miterlimit="10" d="M691.1,439.9V557H492l-93.3-87.8l-210.1,298
-		l-53.1-315.4L82.3,557h-210.1V439.9H11L193.7,65l64.1,404.1l129-180.9l158,151.6H691.1z"/>
+	<path fill="#D6002B" d="M15.061,19.637c0,0.985-0.669,1.783-1.498,1.783H13.18c-0.828,0-1.5-0.798-1.5-1.783v-9.33
+		c0-0.985,0.671-1.783,1.5-1.783h0.384c0.828,0,1.498,0.798,1.498,1.783V19.637z"/>
+	<path fill="#D6002B" d="M20.32,19.637c0,0.985-0.641,1.783-1.467,1.783h-0.385c-0.828,0-1.53-0.798-1.53-1.783v-3.533
+		c0-0.984,0.702-1.758,1.53-1.758h0.385c0.826,0,1.467,0.774,1.467,1.758V19.637z"/>
 </g>
+<path fill="#64788D" d="M22.494,4.016H9.601c-1.047,0-1.958,0.981-1.958,2.191v19.595c0,1.21,0.911,2.191,1.958,2.191h12.894
+	c1.045,0,1.863-0.981,1.863-2.191V6.208C24.357,4.997,23.539,4.016,22.494,4.016z M16.031,27.055c-0.727,0-1.314-0.589-1.314-1.314
+	c0-0.728,0.588-1.315,1.314-1.315c0.726,0,1.315,0.588,1.315,1.315C17.347,26.466,16.757,27.055,16.031,27.055z M22.291,21.17
+	c0,1.21-0.81,2.192-1.857,2.192h-8.828c-1.047,0-1.897-0.982-1.897-2.192V8.023c0-1.21,0.851-2.191,1.897-2.191h8.828
+	c1.048,0,1.857,0.981,1.857,2.191V21.17z"/>
 </svg>
