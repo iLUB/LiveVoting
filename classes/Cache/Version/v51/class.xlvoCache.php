@@ -72,6 +72,9 @@ class xlvoCache extends \ilGlobalCache implements xlvoCacheService {
      * @return string
      */
     public static function lookupServiceClassName($service_type) {
+        //TA, 31.3.2017 Caching leads to issues while using different webservers
+        return 'ilStaticCache';
+
         switch ($service_type) {
             case self::TYPE_APC:
                 return 'ilApc';
