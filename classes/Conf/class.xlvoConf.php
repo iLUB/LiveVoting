@@ -51,7 +51,9 @@ class xlvoConf extends CachingActiveRecord {
 			$url = str_replace("http://", '', $url);
 			$url = str_replace("https://", '', $url);
 
-			if (\ilHTTPS::getInstance()->isDetected()) {
+            //TA: 31.3.2017, changed, since we need http, to redirect to https
+            if (false)//\ilHTTPS::getInstance()->isDetected())
+			{
 				$url = 'https://' . $url;
 			} else {
 				$url = 'http://' . $url;
