@@ -20,7 +20,9 @@ class xlvoSingleVoteResultGUI extends xlvoResultGUI {
 		}
 		$strings = array();
 		foreach ($votes as $vote) {
-			$strings[] = $this->options[$vote->getOptionId()]->getTextForPresentation();
+            if($this->options[$vote->getOptionId()]){
+                $strings[] = $this->options[$vote->getOptionId()]->getTextForPresentation();
+            }
 		}
 
 		return implode(", ", $strings);
