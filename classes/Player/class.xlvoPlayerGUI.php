@@ -421,7 +421,7 @@ class xlvoPlayerGUI extends xlvoGUI {
 			case \LiveVoting\Context\ILIASVersionEnum::ILIAS_VERSION_5_1:
 				\ilUtil::includeMathjax();
 				break;
-			case \LiveVoting\Context\ILIASVersionEnum::ILIAS_VERSION_5_2:
+			case \LiveVoting\Context\ILIASVersionEnum::ILIAS_VERSION_5_2 || \LiveVoting\Context\ILIASVersionEnum::ILIAS_VERSION_5_3:
 				include_once './Services/MathJax/classes/class.ilMathJax.php';
 				ilMathJax::getInstance()->includeMathJax();
 				break;
