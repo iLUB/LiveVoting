@@ -51,13 +51,12 @@ class xlvoVotingFormGUI extends \ilPropertyFormGUI {
 	 * @param xlvoVoting $xlvoVoting
 	 */
 	public function __construct(xlvoVotingGUI $parent_gui, xlvoVoting $xlvoVoting) {
-		global $ilCtrl;
-		/**
-		 * @var $ilCtrl \ilCtrl
-		 */
+		parent::__construct();
+
+		global $DIC;
 		$this->voting = $xlvoVoting;
 		$this->parent_gui = $parent_gui;
-		$this->ctrl = $ilCtrl;
+		$this->ctrl = $DIC->ctrl();
 		$this->pl = ilLiveVotingPlugin::getInstance();
 		$this->ctrl->saveParameter($parent_gui, xlvoVotingGUI::IDENTIFIER);
 		$this->is_new = ($this->voting->getId() == '');
@@ -124,11 +123,6 @@ class xlvoVotingFormGUI extends \ilPropertyFormGUI {
 			'numlist',
 			'cite',
 		));
-
-        //disable image upload for ILIAS 5.0 and below because the web access check would break the images
-        if(version_compare(ILIAS_VERSION_NUMERIC, '5.1.00', '<')) {
-            $te->removePlugin('ilimgupload');
-        }
 
 		$te->setRows(5);
 		$this->addItem($te);

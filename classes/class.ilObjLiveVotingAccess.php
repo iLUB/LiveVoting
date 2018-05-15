@@ -59,16 +59,16 @@ class ilObjLiveVotingAccess extends \ilObjectPluginAccess {
 	 * @return    boolean        true, if everything is ok
 	 */
 	public function _checkAccess($a_cmd, $a_permission, $a_ref_id, $a_obj_id, $a_user_id = "") {
-		global $ilUser, $ilAccess;
+		global $DIC;
 
 		if ($a_user_id == "") {
-			$a_user_id = $ilUser->getId();
+			$a_user_id = $DIC->user()->getId();
 		}
 
 		switch ($a_permission) {
 			case "read":
-				if (! ilObjLiveVotingAccess::checkOnline($a_obj_id)
-					&& ! $ilAccess->checkAccessOfUser($a_user_id, "write", "", $a_ref_id)
+				if (!ilObjLiveVotingAccess::checkOnline($a_obj_id)
+				    && !$DIC->access()->checkAccessOfUser($a_user_id, "write", "", $a_ref_id)
 				) {
 					return false;
 				}
@@ -85,7 +85,7 @@ class ilObjLiveVotingAccess extends \ilObjectPluginAccess {
 	 *
 	 * @return bool
 	 */
-	public static function hasReadAccess($ref_id = NULL, $user_id = NULL) {
+	public static function hasReadAccess($ref_id = null, $user_id = null) {
 		return self::hasAccess('read', $ref_id, $user_id);
 	}
 
@@ -96,7 +96,7 @@ class ilObjLiveVotingAccess extends \ilObjectPluginAccess {
 	 *
 	 * @return bool
 	 */
-	public static function hasWriteAccess($ref_id = NULL, $user_id = NULL) {
+	public static function hasWriteAccess($ref_id = null, $user_id = null) {
 		return self::hasAccess('write', $ref_id, $user_id);
 	}
 
@@ -146,8 +146,19 @@ class ilObjLiveVotingAccess extends \ilObjectPluginAccess {
 	 *
 	 * @return bool
 	 */
-	public static function hasDeleteAccess($ref_id = NULL, $user_id = NULL) {
+	public static function hasDeleteAccess($ref_id = null, $user_id = null) {
 		return self::hasAccess('delete', $ref_id, $user_id);
+	}
+
+
+	/**
+	 * @param null $ref_id
+	 * @param null $user_id
+	 *
+	 * @return bool
+	 */
+	public static function hasCreateAccess($ref_id = null, $user_id = null) {
+		return self::hasAccess('create_xlvo', $ref_id, $user_id);
 	}
 
 
@@ -158,35 +169,33 @@ class ilObjLiveVotingAccess extends \ilObjectPluginAccess {
 	 *
 	 * @return bool
 	 */
-	protected static function hasAccess($permission, $ref_id = NULL, $user_id = NULL) {
-		global $ilUser, $ilAccess, $ilLog;
-		/**
-		 * @var $ilAccess \ilAccessHandler
-		 */
+	protected static function hasAccess($permission, $ref_id = null, $user_id = null) {
+		global $DIC;
 		$ref_id = $ref_id ? $ref_id : $_GET['ref_id'];
-		$user_id = $user_id ? $user_id : $ilUser->getId();
-//		if (! $user_id) {
-//			try {
-//				throw new Exception();
-//			} catch (Exception $e) {
-//				$ilLog->write('XLVO ##########################');
-//				$ilLog->write('XLVO ' . xlvoInitialisation::getContext());
-//				$ilLog->write('XLVO ' . $e->getTraceAsString());
-//				$ilLog->write('XLVO ##########################');
-//				return true;
-//			}
-//		}
+		$user_id = $user_id ? $user_id : $DIC->user()->getId();
+		//		if (! $user_id) {
+		//			try {
+		//				throw new Exception();
+		//			} catch (Exception $e) {
+		//              $ilLog = $DIC["ilLog"];
+		//				$ilLog->write('XLVO ##########################');
+		//				$ilLog->write('XLVO ' . xlvoInitialisation::getContext());
+		//				$ilLog->write('XLVO ' . $e->getTraceAsString());
+		//				$ilLog->write('XLVO ##########################');
+		//				return true;
+		//			}
+		//		}
 
-//		$ilLog->write('XLVO check permission ' . $permission . ' for user ' . $user_id . ' on ref_id ' . $ref_id);
+		//		$ilLog->write('XLVO check permission ' . $permission . ' for user ' . $user_id . ' on ref_id ' . $ref_id);
 
-		return $ilAccess->checkAccessOfUser($user_id, $permission, '', $ref_id);
+		return $DIC->access()->checkAccessOfUser($user_id, $permission, '', $ref_id);
 	}
 
 
 	/**
 	 * Check online status of example object
 	 */
-	public static function checkOnline($a_id = NULL) {
+	public static function checkOnline($a_id = null) {
 		/**
 		 * @var $config xlvoVotingConfig
 		 */

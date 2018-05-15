@@ -31,6 +31,10 @@ div.xlvo_shortlink {
   text-align:     center;
 
   vertical-align: middle;
+
+  /* Fix no wrap if the URL is too long */
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 div.xlvo_pin * {
@@ -127,6 +131,10 @@ div.xlvo-preview-outer {
   display:   block;
 }
 
+.ui-sortable-handle {
+  cursor: move;
+}
+
 span.xlvo-label-url {
   font-size: 3vw;
 }
@@ -139,3 +147,10 @@ span.xlvo-label-url {
 	text-overflow: ellipsis;
   }
 }
+
+.zoom {
+  font-size:   30px;
+  line-height: 32px;
+  //zoom:        4;
+}
+

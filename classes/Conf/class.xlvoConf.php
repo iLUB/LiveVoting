@@ -38,27 +38,22 @@ class xlvoConf extends CachingActiveRecord {
 	 * Max client update frequency in seconds.
 	 */
 	const MAX_CLIENT_UPDATE_FREQUENCY = 60;
+	const TABLE_NAME = 'xlvo_config';
 
 
 	/**
 	 * @return string
 	 */
 	public static function getShortLinkURL() {
-		if (self::getConfig(self::F_ALLOW_SHORTLINK)) {
+
+		$url = null;
+		$shortLinkEnabled = intval(self::getConfig(self::F_ALLOW_SHORTLINK));
+
+		if ($shortLinkEnabled === 1) {
 			$url = self::getConfig(self::F_ALLOW_SHORTLINK_LINK);
 			$url = rtrim($url, "/") . "/";
-
-			$url = str_replace("http://", '', $url);
-			$url = str_replace("https://", '', $url);
-
-            //TA: 31.3.2017, changed, since we need http, to redirect to https
-            if (false)//\ilHTTPS::getInstance()->isDetected())
-			{
-				$url = 'https://' . $url;
-			} else {
-				$url = 'http://' . $url;
-			}
-		} else {
+		}
+		else {
 			$url = ILIAS_HTTP_PATH
 			       . '/Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/pin.php?pin=';
 		}
@@ -122,7 +117,7 @@ class xlvoConf extends CachingActiveRecord {
 	 * @deprecated
 	 */
 	static function returnDbTableName() {
-		return 'xlvo_config';
+		return self::TABLE_NAME;
 	}
 
 
