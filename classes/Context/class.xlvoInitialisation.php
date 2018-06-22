@@ -133,7 +133,7 @@ class xlvoInitialisation extends \ilInitialisation {
 
 	protected static function initHTML2() {
 
-		# parent::initHTML();
+		// parent::initHTML();
 
 
 		if (self::USE_OWN_GLOBAL_TPL) {
