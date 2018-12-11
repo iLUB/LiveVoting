@@ -35,6 +35,9 @@ final class InitialisationManager {
 			case ILIASVersionEnum::ILIAS_VERSION_5_3:
 				Initialisation\Version\v53\xlvoBasicInitialisation::init();
 				break;
+            case ILIASVersionEnum::ILIAS_VERSION_5_4:
+                Initialisation\Version\v54\xlvoBasicInitialisation::init();
+                break;
 			default:
 				throw new \Exception("Can't find bootstrap code for the given ILIAS version.");
 		}

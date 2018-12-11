@@ -378,7 +378,7 @@ class xlvoPlayerGUI extends xlvoGUI {
 			// ILIAS 5.1 fallback
 			$this->toolbar->addButtonInstance($button);
 		}
-		
+
 	}
 
 
@@ -418,6 +418,7 @@ class xlvoPlayerGUI extends xlvoGUI {
 		switch ($subversion) {
 			case \LiveVoting\Context\ILIASVersionEnum::ILIAS_VERSION_5_2:
 			case \LiveVoting\Context\ILIASVersionEnum::ILIAS_VERSION_5_3:
+			    case \LiveVoting\Context\ILIASVersionEnum::ILIAS_VERSION_5_4:
 				include_once './Services/MathJax/classes/class.ilMathJax.php';
 				ilMathJax::getInstance()->includeMathJax();
 				break;

@@ -14,4 +14,6 @@ class ILIASVersionEnum {
 	const ILIAS_VERSION_5_1 = 1;
 	const ILIAS_VERSION_5_2 = 2;
 	const ILIAS_VERSION_5_3 = 3;
+	const ILIAS_VERSION_5_4 =4;
+
 }
