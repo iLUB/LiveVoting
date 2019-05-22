@@ -23,7 +23,10 @@
 */
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once('./Services/Repository/classes/class.ilObjectPluginListGUI.php');
+
+use LiveVoting\Pin\xlvoPin;
+use LiveVoting\Utils\LiveVotingTrait;
+use srag\DIC\LiveVoting\DICTrait;
 
 /**
  * ListGUI implementation for LiveVoting object plugin. This one
@@ -34,8 +37,11 @@ require_once('./Services/Repository/classes/class.ilObjectPluginListGUI.php');
  * ...Access class to get DB data and keep it small.
  *
  */
-class ilObjLiveVotingListGUI extends \ilObjectPluginListGUI {
+class ilObjLiveVotingListGUI extends ilObjectPluginListGUI {
 
+	use DICTrait;
+	use LiveVotingTrait;
+	const PLUGIN_CLASS_NAME = ilLiveVotingPlugin::class;
 	/**
 	 * @var array
 	 */
@@ -46,7 +52,7 @@ class ilObjLiveVotingListGUI extends \ilObjectPluginListGUI {
 	 * Init type
 	 */
 	public function initType() {
-		$this->setType("xlvo");
+		$this->setType(ilLiveVotingPlugin::PLUGIN_ID);
 	}
 
 
@@ -54,7 +60,7 @@ class ilObjLiveVotingListGUI extends \ilObjectPluginListGUI {
 	 * Get name of gui class handling the commands
 	 */
 	public function getGuiClass() {
-		return "ilObjLiveVotingGUI";
+		return ilObjLiveVotingGUI::class;
 	}
 
 
@@ -72,20 +78,20 @@ class ilObjLiveVotingListGUI extends \ilObjectPluginListGUI {
 		$this->info_screen_enabled = true;
 		$this->timings_enabled = false;
 
-		$this->gui_class_name = "ilobjlivevotinggui";
+		$this->gui_class_name = $this->getGuiClass();
 
 		// general commands array
 		$this->commands = array(
 			array(
 				"permission" => "read",
-				"cmd"        => "showContent",
-				"default"    => true,
+				"cmd" => ilObjLiveVotingGUI::CMD_SHOW_CONTENT,
+				"default" => true
 			),
 			array(
 				"permission" => "write",
-				"cmd"        => "editProperties",
-				"txt"        => $this->txt("xlvo_edit"),
-				"default"    => false,
+				"cmd" => ilObjLiveVotingGUI::CMD_EDIT,
+				"txt" => $this->txt("xlvo_edit"),
+				"default" => false
 			),
 		);
 
@@ -95,6 +101,7 @@ class ilObjLiveVotingListGUI extends \ilObjectPluginListGUI {
 
 	/**
 	 * @param string $a_cmd
+	 *
 	 * @return string
 	 */
 	public function getCommandFrame($a_cmd) {
@@ -119,16 +126,15 @@ class ilObjLiveVotingListGUI extends \ilObjectPluginListGUI {
 
 		$props[] = array(
 			"alert" => false,
-			"property" => 'PIN',
-			"value" => LiveVoting\Pin\xlvoPin::lookupPin($this->obj_id),
+			"property" => $this->txt("voter_pin_input"),
+			"value" => xlvoPin::formatPin(xlvoPin::lookupPin($this->obj_id)) // TODO: default.css not loaded
 		);
 
-		require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/LiveVoting/classes/class.ilObjLiveVotingAccess.php');
 		if (!ilObjLiveVotingAccess::checkOnline($this->obj_id)) {
 			$props[] = array(
-				"alert"    => true,
+				"alert" => true,
 				"property" => $this->txt("obj_status"),
-				"value"    => $this->txt("obj_offline"),
+				"value" => $this->txt("obj_offline")
 			);
 		}
 
