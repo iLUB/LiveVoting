@@ -1,5 +1,11 @@
 # Change Log
 
+## [4.3.1]
+- Hotfix: Working enter pin gui again
+
+## [4.3.0]
+- feature: clustering/categorizing of free text questions 
+
 ## [4.2.0]
 - ILIAS 5.4 support
 - Remove ILIAS 5.2 support
