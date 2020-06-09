@@ -15,8 +15,10 @@ var xlvoPlayer = {
 		var node = $('#xlvo-display-player').children();
 		$('#xlvo-display-player').css('height', node.css('height'));
 
-		if (xlvoPlayer.config.use_mathjax && !!MathJax) {
-			MathJax.Hub.Config(xlvoPlayer.mathjax_config);
+		if (xlvoPlayer.config.use_mathjax && !!MathJax && (MathJax.version.charAt(0) !== '3')) {
+			MathJax.Hub.Config({
+				"HTML-CSS": {scale: 80}
+			});
 		}
 	},
 	mathjax_config: {
@@ -293,11 +295,14 @@ var xlvoPlayer = {
 
 
 					if (xlvoPlayer.config.use_mathjax && !!MathJax) {
-						xlvoPlayer.log('kick mathjax');
-						MathJax.Hub.Config(xlvoPlayer.mathjax_config);
-						MathJax.Hub.Queue(
-							["Typeset", MathJax.Hub, 'xlvo-display-player']
-						);
+						if ((MathJax.version.charAt(0) === '3')) {
+							MathJax.typeset('xlvo_voter_player');
+						} else {
+							MathJax.Hub.Config(xlvoPlayer.mathjax_config);
+							MathJax.Hub.Queue(
+								["Typeset", MathJax.Hub, 'xlvo-display-player']
+							);
+						}
 					}
 
 					xlvoPlayer.counter = 0;
