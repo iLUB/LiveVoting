@@ -138,12 +138,12 @@ class xlvoBasicInitialisation
         $this->initTree();
         $this->initAppEventHandler();
         $this->initMail();
+        $this->initGlobalScreen();
         $this->initTemplate();
         $this->initTabs();
         $this->initNavigationHistory();
         $this->initHelp();
         $this->initMainMenu();
-        $this->initGlobalScreen();
     }
 
 
