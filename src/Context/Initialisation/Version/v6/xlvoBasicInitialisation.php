@@ -19,6 +19,7 @@ use ilHelp;
 use ilHTTPS;
 use ILIAS\DI\Container;
 use ILIAS\DI\HTTPServices;
+use ILIAS\GlobalScreen\Services;
 use ILIAS\HTTP\Cookies\CookieJarFactoryImpl;
 use ILIAS\HTTP\Request\RequestFactoryImpl;
 use ILIAS\HTTP\Response\ResponseFactoryImpl;
@@ -41,6 +42,7 @@ use ilToolbarGUI;
 use ilTree;
 use ilUIFramework;
 use ilUtil;
+use ilGSProviderFactory;
 use LiveVoting\Conf\xlvoConf;
 use LiveVoting\Context\Param\ParamManager;
 use LiveVoting\Context\xlvoContext;
@@ -53,6 +55,7 @@ use LiveVoting\Session\xlvoSessionHandler;
 use LiveVoting\Utils\LiveVotingTrait;
 use srag\DIC\LiveVoting\DICTrait;
 use LiveVoting\Context\xlvoDummyUser6;
+use ILIAS\Filesystem\Security\Sanitizing\FilenameSanitizerImpl;
 
 /**
  * Class xlvoBasicInitialisation for ILIAS 6
@@ -140,6 +143,7 @@ class xlvoBasicInitialisation
         $this->initNavigationHistory();
         $this->initHelp();
         $this->initMainMenu();
+        $this->initGlobalScreen();
     }
 
 
@@ -806,5 +810,98 @@ class xlvoBasicInitialisation
         $this->makeGlobal("mail.mime.transport.factory", new ilMailMimeTransportFactory(self::dic()->settings(), self::dic()->appEventHandler()));
 
         $this->makeGlobal("mail.mime.sender.factory", new ilMailMimeSenderFactory(self::dic()->settings()));
+    }
+
+    /**
+     * @param \ILIAS\DI\Container $c
+     */
+    private function initGlobalScreen()
+    {
+        global $DIC;
+        $this->bootstrapFilesystems();
+
+        $DIC['global_screen'] = function () use ($DIC) {
+            return new Services(new ilGSProviderFactory($DIC));
+        };
+        $DIC->globalScreen()->tool()->context()->stack()->clear();
+        $DIC->globalScreen()->tool()->context()->claim()->main();
+    }
+
+    public static function bootstrapFilesystems()
+    {
+        global $DIC;
+
+        $DIC['filesystem.security.sanitizing.filename'] = function ($c) {
+            return new FilenameSanitizerImpl();
+        };
+
+        $DIC['filesystem.factory'] = function ($c) {
+            return new \ILIAS\Filesystem\Provider\DelegatingFilesystemFactory($c['filesystem.security.sanitizing.filename']);
+        };
+
+        $DIC['filesystem.web'] = function ($c) {
+            //web
+
+            /**
+             * @var FilesystemFactory $delegatingFactory
+             */
+            $delegatingFactory = $c['filesystem.factory'];
+            $webConfiguration = new \ILIAS\Filesystem\Provider\Configuration\LocalConfig(ILIAS_ABSOLUTE_PATH . '/' . ILIAS_WEB_DIR . '/' . CLIENT_ID);
+            return $delegatingFactory->getLocal($webConfiguration);
+        };
+
+        $DIC['filesystem.storage'] = function ($c) {
+            //storage
+
+            /**
+             * @var FilesystemFactory $delegatingFactory
+             */
+            $delegatingFactory = $c['filesystem.factory'];
+            $storageConfiguration = new \ILIAS\Filesystem\Provider\Configuration\LocalConfig(ILIAS_DATA_DIR . '/' . CLIENT_ID);
+            return $delegatingFactory->getLocal($storageConfiguration);
+        };
+
+        $DIC['filesystem.temp'] = function ($c) {
+            //temp
+
+            /**
+             * @var FilesystemFactory $delegatingFactory
+             */
+            $delegatingFactory = $c['filesystem.factory'];
+            $tempConfiguration = new \ILIAS\Filesystem\Provider\Configuration\LocalConfig(ILIAS_DATA_DIR . '/' . CLIENT_ID . '/temp');
+            return $delegatingFactory->getLocal($tempConfiguration);
+        };
+
+        $DIC['filesystem.customizing'] = function ($c) {
+            //customizing
+
+            /**
+             * @var FilesystemFactory $delegatingFactory
+             */
+            $delegatingFactory = $c['filesystem.factory'];
+            $customizingConfiguration = new \ILIAS\Filesystem\Provider\Configuration\LocalConfig(ILIAS_ABSOLUTE_PATH . '/' . 'Customizing');
+            return $delegatingFactory->getLocal($customizingConfiguration);
+        };
+
+        $DIC['filesystem.libs'] = function ($c) {
+            //customizing
+
+            /**
+             * @var FilesystemFactory $delegatingFactory
+             */
+            $delegatingFactory = $c['filesystem.factory'];
+            $customizingConfiguration = new \ILIAS\Filesystem\Provider\Configuration\LocalConfig(ILIAS_ABSOLUTE_PATH . '/' . 'libs');
+            return $delegatingFactory->getLocal($customizingConfiguration, true);
+        };
+
+        $DIC['filesystem'] = function ($c) {
+            return new \ILIAS\Filesystem\FilesystemsImpl(
+                $c['filesystem.storage'],
+                $c['filesystem.web'],
+                $c['filesystem.temp'],
+                $c['filesystem.customizing'],
+                $c['filesystem.libs']
+            );
+        };
     }
 }

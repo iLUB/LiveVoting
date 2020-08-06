@@ -43,5 +43,6 @@ try {
 		], xlvoVoter2GUI::CMD_STANDARD);
 	}
 } catch (Throwable $ex) {
-	echo $ex->getMessage() . "<br /><br /><a href='/'>back</a>";
+	echo $ex->getMessage() . "<br /><br /><a href='/'>back</a><br />";
+	echo $ex->getTraceAsString();
 }
