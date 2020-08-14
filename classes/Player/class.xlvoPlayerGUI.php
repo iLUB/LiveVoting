@@ -187,7 +187,6 @@ class xlvoPlayerGUI extends xlvoGUI
         $this->initToolbarDuringVoting();
         $modal = xlvoQRModalGUI::getInstanceFromVotingConfig($this->manager->getVotingConfig())->getHTML();
         self::dic()->mainTemplate()->setContent($modal . $this->getPlayerHTML());
-
         $this->handlePreview();
     }
 
